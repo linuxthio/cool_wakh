@@ -1,0 +1,20 @@
+services:
+  wakh-server:
+    build: .
+    ports:
+      - "9090:9090"
+    env_file:
+      - .env
+    environment:
+      # Chemin conteneur du volume db-data ; distinct de la valeur locale
+      # (ou absente) définie dans .env pour le développement hors Docker.
+      WAKH_DB_PATH: /app/data/db.sqlite3
+    volumes:
+      - db-data:/app/data
+      - media-data:/app/media
+      - static-data:/app/staticfiles
+
+volumes:
+  db-data:
+  media-data:
+  static-data:

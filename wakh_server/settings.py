@@ -16,16 +16,24 @@ Rôle de ce serveur (rappel) :
 from pathlib import Path
 import os
 
+import environ
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    "WAKH_SECRET_KEY",
-    "dev-secret-key-changez-moi-en-production",
-)
+env = environ.Env()
+# En développement local, les variables viennent du fichier .env à la
+# racine du projet. En Docker/production, ce fichier n'existe pas dans
+# l'image (voir .dockerignore) : les variables sont alors injectées
+# directement dans l'environnement du conteneur (docker-compose env_file
+# ou "environment:"), et django-environ les lit tout aussi bien via
+# os.environ — read_env() est silencieux si le fichier est absent.
+environ.Env.read_env(BASE_DIR / ".env")
 
-DEBUG = os.environ.get("WAKH_DEBUG", "1") == "1"
+SECRET_KEY = env("WAKH_SECRET_KEY", default="dev-secret-key-changez-moi-en-production")
 
-ALLOWED_HOSTS = os.environ.get("WAKH_ALLOWED_HOSTS", "*").split(",")
+DEBUG = env.bool("WAKH_DEBUG", default=True)
+
+ALLOWED_HOSTS = env.list("WAKH_ALLOWED_HOSTS", default=["*"])
 
 INSTALLED_APPS = [
     "wakh_server.apps.WakhAdminConfig",
@@ -75,7 +83,7 @@ ASGI_APPLICATION = "wakh_server.asgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": env("WAKH_DB_PATH", default=str(BASE_DIR / "db.sqlite3")),
     }
 }
 
@@ -112,21 +120,21 @@ os.makedirs(MEDIA_QUEUE_ROOT, exist_ok=True)
 # Durée max pendant laquelle un message en attente est conservé avant
 # purge automatique (confidentialité : on ne garde pas le contenu audio
 # indéfiniment si le destinataire ne se reconnecte jamais).
-QUEUED_AUDIO_TTL_HOURS = int(os.environ.get("WAKH_QUEUE_TTL_HOURS", "72"))
+QUEUED_AUDIO_TTL_HOURS = env.int("WAKH_QUEUE_TTL_HOURS", default=72)
 
 # Taille max acceptée pour un message vocal en file d'attente (octets).
-QUEUED_AUDIO_MAX_BYTES = int(os.environ.get("WAKH_QUEUE_MAX_BYTES", str(15 * 1024 * 1024)))
+QUEUED_AUDIO_MAX_BYTES = env.int("WAKH_QUEUE_MAX_BYTES", default=15 * 1024 * 1024)
 
 # Même principe pour les messages texte : durée de rétention max en file
 # d'attente hors-ligne, et longueur max acceptée.
-QUEUED_TEXT_TTL_HOURS = int(os.environ.get("WAKH_TEXT_QUEUE_TTL_HOURS", "72"))
-TEXT_MESSAGE_MAX_LENGTH = int(os.environ.get("WAKH_TEXT_MESSAGE_MAX_LENGTH", "4000"))
+QUEUED_TEXT_TTL_HOURS = env.int("WAKH_TEXT_QUEUE_TTL_HOURS", default=72)
+TEXT_MESSAGE_MAX_LENGTH = env.int("WAKH_TEXT_MESSAGE_MAX_LENGTH", default=4000)
 
 # Même principe pour les images/vidéos : durée de rétention max en file
 # d'attente hors-ligne, et tailles max acceptées (une vidéo pèse
 # naturellement plus lourd qu'une image, d'où deux limites distinctes).
-QUEUED_MEDIA_TTL_HOURS = int(os.environ.get("WAKH_MEDIA_QUEUE_TTL_HOURS", "72"))
-QUEUED_IMAGE_MAX_BYTES = int(os.environ.get("WAKH_IMAGE_MAX_BYTES", str(10 * 1024 * 1024)))
-QUEUED_VIDEO_MAX_BYTES = int(os.environ.get("WAKH_VIDEO_MAX_BYTES", str(50 * 1024 * 1024)))
-QUEUED_DOCUMENT_MAX_BYTES = int(os.environ.get("WAKH_DOCUMENT_MAX_BYTES", str(30 * 1024 * 1024)))
-QUEUED_DELETE_TTL_HOURS = int(os.environ.get("WAKH_DELETE_QUEUE_TTL_HOURS", "72"))
+QUEUED_MEDIA_TTL_HOURS = env.int("WAKH_MEDIA_QUEUE_TTL_HOURS", default=72)
+QUEUED_IMAGE_MAX_BYTES = env.int("WAKH_IMAGE_MAX_BYTES", default=10 * 1024 * 1024)
+QUEUED_VIDEO_MAX_BYTES = env.int("WAKH_VIDEO_MAX_BYTES", default=50 * 1024 * 1024)
+QUEUED_DOCUMENT_MAX_BYTES = env.int("WAKH_DOCUMENT_MAX_BYTES", default=30 * 1024 * 1024)
+QUEUED_DELETE_TTL_HOURS = env.int("WAKH_DELETE_QUEUE_TTL_HOURS", default=72)
