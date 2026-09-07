@@ -1,0 +1,63 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<div class="wakh-dashboard">
+  <div class="wakh-stats-grid">
+    <div class="wakh-stat-card">
+      <span class="wakh-stat-value">{{ wakh_stats.total_numbers }}</span>
+      <span class="wakh-stat-label">Numéros enregistrés</span>
+    </div>
+    <div class="wakh-stat-card wakh-stat-online">
+      <span class="wakh-stat-value">{{ wakh_stats.online_now }}</span>
+      <span class="wakh-stat-label">En ligne actuellement</span>
+    </div>
+    <div class="wakh-stat-card wakh-stat-pending">
+      <span class="wakh-stat-value">{{ wakh_stats.pending_audio }}</span>
+      <span class="wakh-stat-label">Messages vocaux en attente</span>
+    </div>
+    <div class="wakh-stat-card wakh-stat-pending">
+      <span class="wakh-stat-value">{{ wakh_stats.pending_text }}</span>
+      <span class="wakh-stat-label">Messages texte en attente</span>
+    </div>
+    <div class="wakh-stat-card wakh-stat-pending">
+      <span class="wakh-stat-value">{{ wakh_stats.pending_media }}</span>
+      <span class="wakh-stat-label">Images/vidéos/documents en attente</span>
+    </div>
+    <div class="wakh-stat-card wakh-stat-pending">
+      <span class="wakh-stat-value">{{ wakh_stats.pending_delete }}</span>
+      <span class="wakh-stat-label">Suppressions en attente</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .wakh-dashboard { margin-bottom: 28px; }
+  .wakh-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .wakh-stat-card {
+    background: linear-gradient(135deg, #0EA5E9, #0284C7);
+    color: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 6px 18px rgba(14, 165, 233, .25);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .wakh-stat-card.wakh-stat-online {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    box-shadow: 0 6px 18px rgba(34, 197, 94, .25);
+  }
+  .wakh-stat-card.wakh-stat-pending {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, .25);
+  }
+  .wakh-stat-value { font-size: 34px; font-weight: 700; line-height: 1.1; }
+  .wakh-stat-label { font-size: 13px; opacity: .9; }
+</style>
+
+{{ block.super }}
+{% endblock %}

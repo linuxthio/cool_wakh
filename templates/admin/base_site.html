@@ -1,0 +1,90 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /*
+    Django 5 redéfinit ses variables de couleur sous des sélecteurs plus
+    spécifiques que ":root" seul (html[data-theme="dark"], notamment,
+    activé automatiquement si le système est en mode sombre). Sans les
+    dupliquer ici, l'admin devenait incohérent : bleu ciel sur fond clair,
+    mais gris/noir Django dès que l'OS bascule en sombre. Le reste du
+    produit (page d'accueil, application mobile) n'a pas de mode sombre :
+    on applique donc EXACTEMENT la même palette bleu ciel, quel que soit
+    le thème choisi, pour rester cohérent partout.
+  */
+  :root,
+  html[data-theme="light"],
+  html[data-theme="dark"] {
+    --primary: #0EA5E9;
+    --secondary: #0284C7;
+    --accent: #7DD3FC;
+    --primary-fg: #fff;
+
+    --body-fg: #0F172A;
+    --body-bg: #F8FBFF;
+    --body-quiet-color: #64748B;
+    --body-loud-color: #0F172A;
+
+    --header-color: #fff;
+    --header-branding-color: #fff;
+    --header-bg: #0EA5E9;
+    --header-link-color: #fff;
+
+    --breadcrumbs-fg: #E0F2FE;
+    --breadcrumbs-link-fg: #fff;
+    --breadcrumbs-bg: #0284C7;
+
+    --link-fg: #0284C7;
+    --link-hover-color: #0EA5E9;
+    --link-selected-fg: #0284C7;
+
+    --border-color: #E0F2FE;
+    --hairline-color: #E0F2FE;
+
+    --selected-bg: #E0F2FE;
+    --selected-row: #F0F9FF;
+
+    --object-tools-bg: #0EA5E9;
+    --object-tools-hover-bg: #0284C7;
+
+    --button-bg: #0EA5E9;
+    --button-hover-bg: #0284C7;
+    --default-button-bg: #0EA5E9;
+    --default-button-hover-bg: #0284C7;
+
+    --close-button-bg: #64748B;
+    --close-button-hover-bg: #475569;
+    --delete-button-bg: #EF4444;
+    --delete-button-hover-bg: #DC2626;
+
+    --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  #header {
+    background: linear-gradient(120deg, #0EA5E9, #0284C7);
+  }
+  div.breadcrumbs {
+    background: #0284C7;
+  }
+  .module h2, .module caption, .inline-group h2 {
+    background: #0EA5E9;
+  }
+  .selector-chosen h2 {
+    background: #0284C7;
+  }
+
+  /* Le produit n'a pas de mode sombre (page d'accueil et application
+     mobile sont toujours en thème clair bleu ciel) : on masque le
+     sélecteur de thème pour éviter toute incohérence, plutôt que de
+     laisser croire qu'un vrai mode sombre est disponible. */
+  .theme-toggle {
+    display: none !important;
+  }
+</style>
+<script>
+  // Empêche le mode sombre du système de faire dévier l'admin de la
+  // charte bleu ciel utilisée partout ailleurs dans le produit.
+  document.documentElement.setAttribute('data-theme', 'light');
+</script>
+{% endblock %}
